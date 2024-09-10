@@ -1,0 +1,44 @@
+<div class="py-10">
+    <div class="absolute top-4 right-8">
+        <button type="button" class="text-3xl text-red-500" data-dismiss="modal" aria-hidden="true"
+            (click)="onCancel()">&times;</button>
+    </div>
+    <h2 class="text-center font-sans text-2xl ">New Task </h2>
+    <div class="grid gap-4 grid-cols-2  px-5">
+        <div class="my-2">
+            <label class="text-lg mr-4 text-gray-700">Assigned To</label>
+            <input type="text" [(ngModel)]="assignedTo"
+                class="border-2 border-gray-500 px-4 py-2 w-full focus:outline-none focus:border-blue-500" />
+        </div>
+        <div class="my-2">
+            <label class="text-lg mr-4 text-gray-700">Status</label>
+            <input type="text" [(ngModel)]="status"
+                class="border-2 border-gray-500 px-4 py-2 w-full focus:outline-none focus:border-blue-500" />
+        </div>
+        <div class="my-2">
+            <label class="text-lg mr-4 text-gray-700">Due Date</label>
+            <input type="date" [(ngModel)]="dueDate"
+                class="border-2 border-gray-500 px-4 py-2 w-full focus:outline-none focus:border-blue-500" />
+        </div>
+        <div class="my-2">
+            <label class="text-lg mr-4 text-gray-700">Priority</label>
+            <input type="text" [(ngModel)]="priority"
+                class="border-2 border-gray-500 px-4 py-2 w-full focus:outline-none focus:border-blue-500" />
+        </div>
+        <div class="col-span-2">
+            <label class="text-lg mr-4 text-gray-700">Description</label>
+            <textarea type="text" [(ngModel)]="description"
+                class="border-2 border-gray-500 px-4 py-2 w-full focus:outline-none focus:border-blue-500" ></textarea>
+        </div>    
+    </div>
+    <div class="flex justify-end gap-2  mt-4  px-6">
+        <button class="bg-gray-300 text-black rounded hover:bg-gray-400 focus:outline-none px-4 py-2"
+            (click)="onCancel()">
+            Cancel
+        </button>
+        <button class="bg-black text-white rounded hover:bg-blue-100 hover:text-black focus:outline-none px-4 py-2"
+            (click)="handleSaveTask()">
+            Save
+        </button>
+    </div>
+</div>
