@@ -1,15 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { Component, Inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-edit-task',
   standalone: true,
-  imports: [CommonModule,FormsModule,ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule],
   templateUrl: './edit-task.component.html',
   styleUrl: './edit-task.component.css'
 })
@@ -20,45 +18,24 @@ export class EditTaskComponent {
   priority = new FormControl('');
   description = new FormControl('');
   loading = false;
-  taskId: string = '';
 
   constructor(
-    private route: ActivatedRoute,
+    @Inject(MAT_DIALOG_DATA) public data: any, 
     private http: HttpClient,
     private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<EditTaskComponent>
   ) { }
 
   ngOnInit(): void {
-    this.taskId = this.route.snapshot.paramMap.get('id') || '';
-    this.loadTaskData();
-    console.log(this.route)
-  }
-
-  loadTaskData() {
-    this.loading = true;
-    this.http.get<any>(`http://localhost:5555/tasks/${this.taskId}`).subscribe({
-      next: (response) => {
-        this.assignedTo.setValue(response.assignedTo);
-        this.status.setValue(response.status);
-        this.dueDate.setValue(response.dueDate);
-        this.priority.setValue(response.priority);
-        this.description.setValue(response.description);
-        this.loading = false;
-      },
-      error: (error) => {
-        this.loading = false;
-        this.snackBar.open('Error fetching task data', 'Close', {
-          duration: 3000,
-          panelClass: ['bg-red-500', 'text-white'],
-        });
-        console.error(error);
-      }
-    });
+    this.assignedTo.setValue(this.data.assignedTo);
+    this.status.setValue(this.data.status);
+    this.dueDate.setValue(this.data.dueDate);
+    this.priority.setValue(this.data.priority);
+    this.description.setValue(this.data.description);
   }
 
   handleEditTask() {
-    const data = {
+    const updatedTask = {
       assignedTo: this.assignedTo.value,
       status: this.status.value,
       dueDate: this.dueDate.value,
@@ -67,20 +44,21 @@ export class EditTaskComponent {
     };
 
     this.loading = true;
-    this.http.put(`http://localhost:5555/tasks/${this.taskId}`, data).subscribe({
+
+    this.http.put(`http://localhost:5555/tasks/${this.data._id}`, updatedTask).subscribe({
       next: () => {
         this.loading = false;
-        this.snackBar.open('Task Edited Successfully', 'Close', {
+        this.snackBar.open('Task updated successfully', 'Close', {
           duration: 3000,
-          panelClass: ['bg-green-500', 'text-white'],
+          panelClass: ['bg-green-500', 'text-white']
         });
         this.dialogRef.close(); 
       },
       error: (error) => {
         this.loading = false;
-        this.snackBar.open('Error editing task', 'Close', {
+        this.snackBar.open('Error updating task', 'Close', {
           duration: 3000,
-          panelClass: ['bg-red-500', 'text-white'],
+          panelClass: ['bg-red-500', 'text-white']
         });
         console.error(error);
       }

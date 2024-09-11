@@ -1,48 +1,81 @@
 <div class="py-10 px-5 ">
     <div class="w-full h-[80px] flex justify-between">
-        <div >
+        <div>
             <h2 class="font-sans text-5xl font-bold py-1">Tasks</h2>
             <p class="font-sans text-2xl font-medium ">All Tasks</p>
         </div>
-        <div class="flex flex-col  gap-2 items-center px-10">
-            <div class="flex gap-2  items-center justify-center">
-                <button class="bg-black  text-base py-2 px-6  hover:border-2 rounded-3xl text-white hover:bg-white hover:text-black hover:border-black" (click)="openCreateTaskModal()">New Task</button>
-                <button class="bg-black   hover:border-2 text-base py-2 px-6 rounded-3xl text-white hover:bg-white hover:text-black hover:border-black" (click)="fetchTasks()">Refresh</button>
+        <div class="flex flex-col gap-2 items-center px-10">
+            <div class="flex gap-2 items-center justify-center">
+                <button
+                    class="bg-black text-base py-2 px-6 hover:border-2 rounded-3xl text-white hover:bg-white hover:text-black hover:border-black"
+                    (click)="openCreateTaskModal()">New Task</button>
+                <button
+                    class="bg-black hover:border-2 text-base py-2 px-6 rounded-3xl text-white hover:bg-white hover:text-black hover:border-black"
+                    (click)="fetchTasks()">Refresh</button>
             </div>
             <div>
                 <input type="text" placeholder="Search" class="outline-none px-6 py-3 rounded-lg text-xl border-2" />
             </div>
         </div>
     </div>
-    <div class="py-14 overflow-x-auto">
+    <div class="pt-14 pb-4 overflow-x-auto">
         <table class="border-2 bg-white border-black min-w-full">
             <thead>
                 <tr class="border-b-2 border-black">
-                    <th class="text-gray-500 text-xl">No.</th>
-                    <th class="text-gray-500 text-xl">Assigned To</th>
-                    <th class="text-gray-500 text-xl">Status</th>
-                    <th class="text-gray-500 text-xl">Due Date</th>
-                    <th class="text-gray-500 text-xl">Priority</th>
-                    <th class="text-gray-500 text-xl">Comments</th>
-                    <th class="text-gray-500 text-xl">Action</th>
+                    <th class="text-gray-500 text-xl border-r border-black">No.</th>
+                    <th class="text-gray-500 text-xl border-r border-black">Assigned To</th>
+                    <th class="text-gray-500 text-xl border-r border-black">Status</th>
+                    <th class="text-gray-500 text-xl border-r border-black">Due Date</th>
+                    <th class="text-gray-500 text-xl border-r border-black">Priority</th>
+                    <th class="text-gray-500 text-xl border-r border-black">Comments</th>
+                    <th class="text-gray-500 text-xl border-r border-black">Action</th>
                 </tr>
             </thead>
             <tbody>
-                <tr class="text-center" *ngFor="let task of tasks; let i = index; ">
-                    <td class="py-2 text-lg font-sans font-medium">{{i+1}}</td>
-                    <td class="py-2 text-lg font-sans font-medium">{{task.assignedTo}}</td>
-                    <td class="py-2 text-lg font-sans font-medium">{{task.status}}</td>
-                    <td class="py-2 text-lg font-sans font-medium">{{task.dueDate}}</td>
-                    <td class="py-2 text-lg font-sans font-medium">{{task.priority}}</td>
-                    <td class="py-2 text-lg font-sans font-medium">{{task.description}}</td>
-                    <td class="py-2 text-lg font-sans font-medium ">
+                <tr class="text-center" *ngFor="let task of currentData; let i = index">
+                    <td class="py-2 text-lg font-sans border-r border-black border-b font-medium">{{i + 1 + (currentPage - 1) * rowsPerPage}}</td>
+                    <td class="py-2 text-lg font-sans border-r border-black border-b font-medium">{{task.assignedTo}}</td>
+                    <td class="py-2 text-lg font-sans border-r border-black border-b font-medium">{{task.status}}</td>
+                    <td class="py-2 text-lg font-sans border-r border-black border-b font-medium">{{task.dueDate | date: 'dd-MM-yy'}}</td>
+                    <td class="py-2 text-lg font-sans border-r border-black border-b font-medium">{{task.priority}}</td>
+                    <td class="py-2 text-lg font-sans border-r border-black border-b font-medium">{{task.description}}</td>
+                    <td class="py-2 text-lg font-sans border-r border-black border-b font-medium">
                         <div class="flex gap-2 items-center justify-center">
-                            <button class="bg-blue-400 px-4 py-2 rounded-3xl text-white" (click)="openEditTaskModal()">Edit</button>
-                            <button class="bg-red-500 px-4 py-2 rounded-3xl text-white" (click)="openDeleteTaskModal(task._id)">Delete</button>
+                            <button class="bg-blue-400 px-4 py-2 rounded-3xl text-white"
+                                (click)="openEditTaskModal(task)">Edit</button>
+                            <button class="bg-red-500 px-4 py-2 rounded-3xl text-white"
+                                (click)="openDeleteTaskModal(task._id)">Delete</button>
                         </div>
                     </td>
                 </tr>
             </tbody>
         </table>
+    </div>
+    <div class="flex justify-between items-center px-4">
+        <div class="flex flex-row justify-center items-center border border-gray-400 px-2 py-1 w-24">
+            <select [(ngModel)]="rowsPerPage" (change)="handleRowsPerPageChange($event)" class="outline-none font-semibold text-xl">
+                <option *ngFor="let size of [5, 10, 15, 20,50]" [value]="size" >{{ size }}</option>
+            </select>
+        </div>
+        <div class="flex flex-row font-semibold">
+            <button (click)="handleFirstPage()" [disabled]="currentPage === 1"
+                class="flex flex-row justify-center items-center border border-gray-300 px-2 py-1 w-24 ">
+                First
+            </button>
+            <button (click)="handlePreviousPage()" [disabled]="currentPage === 1"
+                class="flex flex-row justify-center items-center border border-gray-300 px-2 py-1 w-24">
+                Previous
+            </button>
+            <span class="flex justify-center items-center border border-gray-300 px-2 py-1 w-24 text-blue-500">{{ currentPage
+                }}</span>
+            <button (click)="handleNextPage()" [disabled]="currentPage === totalPages"
+                class="flex flex-row justify-center items-center border border-gray-300 px-2 py-1 w-24">
+                Next
+            </button>
+            <button (click)="handleLastPage()" [disabled]="currentPage === totalPages"
+                class="flex flex-row justify-center items-center border border-gray-300 px-2 py-1 w-24">
+                Last
+            </button>
+        </div>
     </div>
 </div>

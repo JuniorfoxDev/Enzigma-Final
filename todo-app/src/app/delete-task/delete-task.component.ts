@@ -17,7 +17,6 @@ export class DeleteTaskComponent {
     public dialogRef: MatDialogRef<DeleteTaskComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    // Fetch the task ID from the data injected into the dialog
     if (data && data.id) {
       this.taskId = data.id;
     } else {
@@ -25,14 +24,14 @@ export class DeleteTaskComponent {
     }
   }
 
-  // Handle task deletion
+  
   handleDeleteTask() {
     if (this.taskId) {
       this.http.delete(`http://localhost:5555/tasks/${this.taskId}`).subscribe({
         next: (response) => {
           console.log('Task deleted successfully:', response);
           this.snackBar.open('Task deleted successfully', 'Close');
-          this.dialogRef.close(true); // Close the dialog and notify success
+          this.dialogRef.close(true); 
         },
         error: (error) => {
           console.error('Error occurred:', error);
@@ -45,6 +44,6 @@ export class DeleteTaskComponent {
   }
 
   onCancel(): void {
-    this.dialogRef.close(false); // Close the dialog without taking action
+    this.dialogRef.close(false); 
   }
 }
