@@ -8,5 +8,4 @@ export const routes: Routes = [
     {path:'',component:MainComponent},
     {path:'tasks/create', component: CreateTaskComponent},
     {path:'tasks/edit/:id', component:EditTaskComponent},
-    {path: 'tasks/delete/:id', component:DeleteTaskComponent},
 ];

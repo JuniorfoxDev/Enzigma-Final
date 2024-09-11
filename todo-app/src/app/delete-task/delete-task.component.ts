@@ -1,48 +1,50 @@
 import { Component, Inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-delete-task',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
   templateUrl: './delete-task.component.html',
   styleUrls: ['./delete-task.component.css']
 })
 export class DeleteTaskComponent {
-  taskId: string;
+  taskId: string | undefined;
 
   constructor(
-    private route: ActivatedRoute,
     private http: HttpClient,
-    private router: Router,
     private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<DeleteTaskComponent>,
-    @Inject(MAT_DIALOG_DATA) public data : any
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    this.taskId =  data.id ||  '';
-    console.log(this.taskId)
+    // Fetch the task ID from the data injected into the dialog
+    if (data && data.id) {
+      this.taskId = data.id;
+    } else {
+      console.error('No task ID provided');
+    }
   }
 
+  // Handle task deletion
   handleDeleteTask() {
-    
-    this.http.delete(`http://localhost:5555/tasks/${this.taskId}`).subscribe({
-      next: () => {
-        this.snackBar.open('Task Deleted Successfully', 'Close');
-        this.dialogRef.close(true); 
-      },
-      error: (error) => {
-        this.snackBar.open('Error deleting task', 'Close');
-        console.error(error);
-      }
-    });
+    if (this.taskId) {
+      this.http.delete(`http://localhost:5555/tasks/${this.taskId}`).subscribe({
+        next: (response) => {
+          console.log('Task deleted successfully:', response);
+          this.snackBar.open('Task deleted successfully', 'Close');
+          this.dialogRef.close(true); // Close the dialog and notify success
+        },
+        error: (error) => {
+          console.error('Error occurred:', error);
+          this.snackBar.open('Error deleting task', 'Close');
+        }
+      });
+    } else {
+      this.snackBar.open('Task ID is missing', 'Close');
+    }
   }
 
   onCancel(): void {
-    this.dialogRef.close();
+    this.dialogRef.close(false); // Close the dialog without taking action
   }
 }
