@@ -8,7 +8,7 @@ const port = 5555;
 
 // Allow requests from all origins (adjust as needed for specific domains)
 app.use(cors({
-    origin: ['http://localhost:4200', 'http://anotherdomain.com'], // Front-end domains
+    origin: ['http://localhost:4200'], // Front-end domains
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
